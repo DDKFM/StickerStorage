@@ -1,4 +1,4 @@
-package de.ddkfm.SticketStorage.utils
+package de.ddkfm.SticketStorage.security
 
 object SecurityConstants {
     @JvmStatic
