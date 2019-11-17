@@ -4,7 +4,7 @@ object SecurityConstants {
     @JvmStatic
     val AUTH_LOGIN_URL = "/v1/authenticate"
     @JvmStatic
-    val JWT_SECRET = "n2r5u8x/A%D*G-KaPdSgVkYp3s6v9y\$B&E(H+MbQeThWmZq4t7w!z%C*F-J@NcRf"
+    val JWT_SECRET = System.getenv("JWT_SECRET") ?: "HalloWelt"
 
     // JWT token defaults
     @JvmStatic
@@ -14,13 +14,13 @@ object SecurityConstants {
     @JvmStatic
     val TOKEN_TYPE = "JWT"
     @JvmStatic
-    val TOKEN_ISSUER = "secure-api"
+    val TOKEN_ISSUER = "Sticker Storage"
     @JvmStatic
-    val TOKEN_AUDIENCE = "secure-app"
+    val TOKEN_AUDIENCE = "Sticker Storage"
 
     @JvmStatic
-    val AUTHENTICATION_USERNAME = "username"
+    val AUTHENTICATION_USERNAME = System.getenv("AUTHENTICATION_USERNAME") ?: "admin"
 
     @JvmStatic
-    val AUTHENTICATION_PASSWORD = "password"
+    val AUTHENTICATION_PASSWORD = System.getenv("AUTHENTICATION_PASSWORD") ?: "admin"
 }
