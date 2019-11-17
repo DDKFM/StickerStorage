@@ -1,7 +1,9 @@
 package de.ddkfm.StickerStorage.controller
 
 import de.ddkfm.StickerStorage.models.Event
+import de.ddkfm.StickerStorage.models.SimpleEvent
 import de.ddkfm.StickerStorage.repository.EventRepository
+import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.utils.created
 import de.ddkfm.StickerStorage.utils.location
 import de.ddkfm.StickerStorage.utils.withParams
@@ -13,33 +15,33 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/v1/events")
-class EventController(private val events: EventRepository) {
+class EventController(private val events: EventRepository, private val images: ImageRepository) {
 
 
     @GetMapping("")
-    fun all(): ResponseEntity<List<Event>> {
+    fun all(): ResponseEntity<List<SimpleEvent>> {
         val start = System.currentTimeMillis()
-        val allEvents = events.findAll()
+        val allEvents = events.findAll().map { it.toModel() }
         println("${System.currentTimeMillis() - start} ms")
         return ok(allEvents)
     }
 
     @GetMapping("/{id}")
-    fun get(@PathVariable("id") id: Long): ResponseEntity<Event> {
+    fun get(@PathVariable("id") id: Long): ResponseEntity<SimpleEvent> {
         val event = events.findById(id)
                 .orElse(null)
                 ?: return notFound().build()
-        return ok(event)
+        return ok(event.toModel())
     }
 
     @PostMapping("")
-    fun create(@RequestBody event : Event, request : HttpServletRequest) : ResponseEntity<*> {
+    fun create(@RequestBody event : SimpleEvent, request : HttpServletRequest) : ResponseEntity<*> {
         val existingEvent = events.findByName(event.name)
                 .firstOrNull()
         if(existingEvent != null)
             return badRequest()
                     .body("event already exists")
-        val saved = events.save(event)
+        val saved = events.save(Event(event.name, event.isExternalEvent))
         return request
                 .location("/v1/events/{ID}")
                 .withParams(saved.id)
