@@ -19,10 +19,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/stickerstorage2
     username: postgres
     password: postgres
-    cachePrepStmts: true
-    prepStmtCacheSize: 250
-    prepStmtCacheSqlLimit: 2048
-    useServerPrepStmts: true
 
   jpa:
     openInView: false
@@ -43,4 +39,4 @@ logging:
     org.springframework.web: INFO
     org.springframework.security: DEBUG
     com.example: DEBUG
-  file: app.log
+  file: logs/app.log
