@@ -1,6 +1,6 @@
-package de.ddkfm.SticketStorage.repository
+package de.ddkfm.StickerStorage.repository
 
-import de.ddkfm.SticketStorage.models.Location
+import de.ddkfm.StickerStorage.models.Location
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

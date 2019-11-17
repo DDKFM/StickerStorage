@@ -1,9 +1,9 @@
-package de.ddkfm.SticketStorage
+package de.ddkfm.StickerStorage
 
-import de.ddkfm.SticketStorage.models.Event
-import de.ddkfm.SticketStorage.models.Location
-import de.ddkfm.SticketStorage.repository.EventRepository
-import de.ddkfm.SticketStorage.repository.LocationRepository
+import de.ddkfm.StickerStorage.models.Event
+import de.ddkfm.StickerStorage.models.Location
+import de.ddkfm.StickerStorage.repository.EventRepository
+import de.ddkfm.StickerStorage.repository.LocationRepository
 import kong.unirest.Unirest
 import lombok.extern.slf4j.Slf4j
 import org.jsoup.Jsoup

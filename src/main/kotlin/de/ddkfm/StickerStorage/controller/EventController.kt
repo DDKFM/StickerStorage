@@ -1,10 +1,10 @@
-package de.ddkfm.SticketStorage.controller
+package de.ddkfm.StickerStorage.controller
 
-import de.ddkfm.SticketStorage.models.Event
-import de.ddkfm.SticketStorage.repository.EventRepository
-import de.ddkfm.SticketStorage.utils.created
-import de.ddkfm.SticketStorage.utils.location
-import de.ddkfm.SticketStorage.utils.withParams
+import de.ddkfm.StickerStorage.models.Event
+import de.ddkfm.StickerStorage.repository.EventRepository
+import de.ddkfm.StickerStorage.utils.created
+import de.ddkfm.StickerStorage.utils.location
+import de.ddkfm.StickerStorage.utils.withParams
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.*

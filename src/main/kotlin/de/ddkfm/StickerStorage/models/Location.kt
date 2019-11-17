@@ -1,11 +1,9 @@
-package de.ddkfm.SticketStorage.models
+package de.ddkfm.StickerStorage.models
 
 import lombok.AllArgsConstructor
 import lombok.Builder
 import lombok.Data
 import lombok.NoArgsConstructor
-import org.springframework.data.jpa.repository.JpaRepository
-import java.io.Serializable
 import javax.persistence.*
 
 @Data

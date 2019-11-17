@@ -1,4 +1,4 @@
-package de.ddkfm.SticketStorage.security
+package de.ddkfm.StickerStorage.security
 
 import io.jsonwebtoken.*
 import org.apache.logging.log4j.LogManager

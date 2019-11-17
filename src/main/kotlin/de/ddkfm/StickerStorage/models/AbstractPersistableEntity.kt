@@ -1,4 +1,4 @@
-package de.ddkfm.SticketStorage.models
+package de.ddkfm.StickerStorage.models
 
 import lombok.Getter
 import lombok.Setter

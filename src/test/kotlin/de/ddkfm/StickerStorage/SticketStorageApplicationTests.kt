@@ -1,4 +1,4 @@
-package de.ddkfm.SticketStorage
+package de.ddkfm.StickerStorage
 
 import org.junit.Test
 import org.junit.runner.RunWith

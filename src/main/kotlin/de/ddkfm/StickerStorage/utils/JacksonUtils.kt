@@ -1,4 +1,4 @@
-package de.ddkfm.SticketStorage.utils
+package de.ddkfm.StickerStorage.utils
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
