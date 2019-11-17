@@ -1,8 +1,10 @@
 package de.ddkfm.SticketStorage.controller
 
 import de.ddkfm.SticketStorage.models.Location
-import de.ddkfm.SticketStorage.models.LocationNotFoundException
 import de.ddkfm.SticketStorage.repository.LocationRepository
+import de.ddkfm.SticketStorage.utils.created
+import de.ddkfm.SticketStorage.utils.location
+import de.ddkfm.SticketStorage.utils.withParams
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.GetMapping
@@ -38,13 +40,11 @@ class LocationController(private val locations: LocationRepository) {
     @PostMapping("")
     fun create(@RequestBody location: Location, request: HttpServletRequest): ResponseEntity<Location> {
         val saved = this.locations.save(location)
-        return created(
-                ServletUriComponentsBuilder
-                        .fromContextPath(request)
-                        .path("/v1/location/{id}")
-                        .buildAndExpand(saved.id)
-                        .toUri())
-                .build()
+        return request
+                .location("/v1/location/{id}")
+                .withParams(saved.id)
+                .created()
+                .body(saved)
     }
 
 }

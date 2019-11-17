@@ -1,5 +1,6 @@
 package de.ddkfm.SticketStorage.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import lombok.AllArgsConstructor
 import lombok.Builder
 import lombok.Data
@@ -13,10 +14,12 @@ import javax.persistence.*
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "[Location]")
-data class Location(
-    @Column(length = 255)
+@Table(name = "[Event]")
+data class Event(
+    @Column(length = 255, nullable = false)
     var name : String,
-    @Column(length = 255)
-    var comment : String
+    @Column(name = "externalEvent")
+    var isExternalEvent : Boolean = false,
+    @Column(length = 255, nullable = true)
+    var thumbnailUrl : String?
 ) :  AbstractPersistableEntity<Long>()
