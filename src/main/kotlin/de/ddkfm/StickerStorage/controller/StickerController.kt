@@ -29,8 +29,15 @@ class StickerController(private val stickers: StickerRepository,
 
 
     @GetMapping("")
-    fun all(): ResponseEntity<List<SimpleSticker>> {
-        val allSticker = stickers.findAll()
+    fun all(
+            @RequestParam("event", defaultValue = "") event : String = "",
+            @RequestParam("location", defaultValue = "") location : String = "",
+            @RequestParam("query", defaultValue = "") query : String = ""): ResponseEntity<List<SimpleSticker>> {
+
+        val allSticker = when {
+            query.isNotEmpty() -> stickers.findByNameIgnoreCaseContaining(query)
+            else -> stickers.findAll()
+        }
         return ok(allSticker.map { it.toSimple() })
     }
 

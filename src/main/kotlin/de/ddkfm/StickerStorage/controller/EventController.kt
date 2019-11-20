@@ -25,11 +25,12 @@ class EventController(private val events: EventRepository, private val images: I
 
 
     @GetMapping("")
-    fun all(): ResponseEntity<List<SimpleEvent>> {
-        return measureTime("all Events") {
-            val allEvents = events.findAll().map { it.toModel() }
-            ok(allEvents)
+    fun all(@RequestParam("query", defaultValue = "") query : String = ""): ResponseEntity<List<SimpleEvent>> {
+        val allEvents = when {
+            query.isNotEmpty() -> events.findByNameIgnoreCaseContaining(query)
+            else -> events.findAll()
         }
+        return ok(allEvents.map { it.toModel() })
     }
 
     @GetMapping("/{id}")
