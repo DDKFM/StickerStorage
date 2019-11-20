@@ -6,6 +6,7 @@ import de.ddkfm.StickerStorage.models.Location
 import de.ddkfm.StickerStorage.repository.EventRepository
 import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.repository.LocationRepository
+import de.ddkfm.StickerStorage.utils.saveIn
 import kong.unirest.Unirest
 import lombok.extern.slf4j.Slf4j
 import org.jsoup.Jsoup
@@ -33,12 +34,6 @@ class DataInitializer : CommandLineRunner {
             val newLocation = Location("Test", "Test")
             locations.save(newLocation)
         }
-        val clt2019 = events.findByName("Chemnitzer Linuxtage 2019").firstOrNull()
-        if(clt2019 == null) {
-            val saved = Event("Chemnitzer Linux Tage 2019", false)
-                    .let { events.save(it) }
-            Image(ByteArray(0), "", saved).let { images.save(it) }
-        }
         cacheEvents()
 
     }
@@ -48,27 +43,23 @@ class DataInitializer : CommandLineRunner {
             val html = resp.contentAsString
             val document = Jsoup.parse(html)
             val contents = document.select(".thumbnail")
+            val dbEvents = this.events.findAll()
             contents.forEach { content ->
                 val name = content.selectFirst(".caption").html()
                 val imgUrl = content.selectFirst("img").attr("src")
                 val imgData = Unirest.get(imgUrl).asString().body
                 val externalEvent = Event(name, true)
-                val existing = events.findByName(externalEvent.name).firstOrNull()
+                val existing = dbEvents.firstOrNull { it.name == externalEvent.name }
                 if(existing == null) {
-                    val savedEvent = events.save(externalEvent)
-                    images.save(Image(imgData.toByteArray(), imgUrl, savedEvent))
-                } else {
-                    val savedEvent = existing.apply {
-                        isExternalEvent = true
-                    }.let { events.save(it) }
-                    val existingImage = images.findByEventId(savedEvent.id ?: -1).firstOrNull()
-                    if(existingImage == null) {
-                        Image(imgData.toByteArray(), imgUrl, savedEvent).let { images.save(it) }
-                    } else {
-                        existingImage.apply {
-                            this.imageData = imgData.toByteArray()
-                            this.imageUrl = imgUrl
-                        }.let { images.save(it) }
+                    val newEvent = externalEvent.saveIn(events)
+                    if(newEvent == null) {
+                        println("event ${externalEvent.name} was not saved")
+                        return@forEach
+                    }
+                    val newImage = Image(imgData.toByteArray(), imgUrl, newEvent).saveIn(images)
+                    if(newImage == null) {
+                        println("image for event ${externalEvent.name} was not saved")
+                        return@forEach
                     }
                 }
             }
