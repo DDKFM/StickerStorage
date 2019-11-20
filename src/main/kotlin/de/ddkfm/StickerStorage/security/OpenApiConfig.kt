@@ -33,7 +33,7 @@ class OpenApiConfig {
                         .description("a simple REST API for accessing your personal sticker collection")
                         .license(License()
                             .name("MIT License")
-                            .url("https://github.com/DDKFM/StickerStorage")))
+                            .url("https://github.com/DDKFM/StickerStorage/blob/master/LICENSE")))
                 .addSecurityItem(SecurityRequirement().addList("api"))
                 .addSecurityItem(SecurityRequirement().addList("login"))
     }
