@@ -4,6 +4,8 @@ import de.ddkfm.StickerStorage.models.Token
 import de.ddkfm.StickerStorage.security.JwtTokenProvider
 import de.ddkfm.StickerStorage.security.SecurityConstants
 import de.ddkfm.StickerStorage.utils.measureTime
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
@@ -16,9 +18,9 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/v1/authenticate")
+@Tag(name = "Authentication")
+@SecurityRequirement(name = "login")
 class AuthenticationController {
-
-
     @GetMapping("")
     fun login(request : HttpServletRequest): ResponseEntity<Token> {
         return measureTime("login") {

@@ -5,6 +5,8 @@ import de.ddkfm.StickerStorage.repository.LocationRepository
 import de.ddkfm.StickerStorage.utils.created
 import de.ddkfm.StickerStorage.utils.location
 import de.ddkfm.StickerStorage.utils.withParams
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping
 
 @RestController
 @RequestMapping("/v1/locations")
+@SecurityRequirement(name = "api")
+@Tag(name = "locations")
 class LocationController(private val locations: LocationRepository) {
 
 

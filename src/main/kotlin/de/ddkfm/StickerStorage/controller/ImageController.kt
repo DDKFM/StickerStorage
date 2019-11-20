@@ -9,6 +9,8 @@ import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.utils.created
 import de.ddkfm.StickerStorage.utils.location
 import de.ddkfm.StickerStorage.utils.withParams
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.*
@@ -17,6 +19,8 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/v1/events/{id}")
+@SecurityRequirement(name = "api")
+@Tag(name = "images")
 class ImageController(private val images: ImageRepository) {
 
     @GetMapping("/image")
