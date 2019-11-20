@@ -1,10 +1,9 @@
 package de.ddkfm.StickerStorage.controller
 
-import de.ddkfm.StickerStorage.models.Event
-import de.ddkfm.StickerStorage.models.SimpleEvent
-import de.ddkfm.StickerStorage.models.SimpleSticker
-import de.ddkfm.StickerStorage.models.Sticker
+import de.ddkfm.StickerStorage.models.*
 import de.ddkfm.StickerStorage.repository.EventRepository
+import de.ddkfm.StickerStorage.repository.ImageRepository
+import de.ddkfm.StickerStorage.repository.LocationRepository
 import de.ddkfm.StickerStorage.repository.StickerRepository
 import de.ddkfm.StickerStorage.utils.created
 import de.ddkfm.StickerStorage.utils.location
@@ -23,7 +22,10 @@ import javax.servlet.http.HttpServletRequest
 @RequestMapping("/v1/stickers")
 @Tag(name = "stickers")
 @SecurityRequirement(name = "api")
-class StickerController(private val stickers: StickerRepository, private val events : EventRepository) {
+class StickerController(private val stickers: StickerRepository,
+                        private val events : EventRepository,
+                        private val locations : LocationRepository,
+                        private val images : ImageRepository) {
 
 
     @GetMapping("")
@@ -46,12 +48,17 @@ class StickerController(private val stickers: StickerRepository, private val eve
         val event = sticker.eventId
                 ?.let { events.findById(it).orElse(null) }
                 ?: return badRequest().build()
+        val location = sticker.locationId
+                ?.let { locations.findById(it).orElse(null) }
+                ?: return badRequest().build()
+
         val savedSticker = Sticker(
                 name = sticker.name,
                 event = event,
                 keywords = sticker.keywords,
                 comment = sticker.comment,
-                amount = sticker.amount
+                amount = sticker.amount,
+                location = location
         ).saveIn(stickers)
         if(savedSticker?.id == null)
             return badRequest().build()
@@ -61,5 +68,18 @@ class StickerController(private val stickers: StickerRepository, private val eve
                 .created()
                 .body(savedSticker.toSimple())
     }
+
+    @GetMapping("/{stickerId}/image")
+    fun getImage(@PathVariable("stickerId") id: Long, request : HttpServletRequest): ResponseEntity<SimpleImage> {
+        val image = images.findByStickerId(id)
+                .firstOrNull()
+                ?: return notFound().build()
+        val imageCallback = request
+                .location("/v1/images/{imageId}")
+                .withParams(image.id)
+                .toUri()
+        return ok(SimpleImage(imageCallback.toString(), image.imageUrl, null, image.sticker?.id))
+    }
+
 
 }

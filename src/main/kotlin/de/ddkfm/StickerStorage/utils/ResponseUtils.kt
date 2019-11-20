@@ -13,7 +13,7 @@ fun HttpServletRequest.location(path : String) : UriComponentsBuilder {
 }
 
 fun UriComponentsBuilder.withParams(vararg params : Any?) : UriComponents {
-    return this.buildAndExpand(params)
+    return this.buildAndExpand(*params)
 }
 
 fun UriComponentsBuilder.withParams(params : Map<String, Any?>) : UriComponents {

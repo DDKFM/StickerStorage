@@ -47,18 +47,18 @@ class DataInitializer : CommandLineRunner {
             contents.forEach { content ->
                 val name = content.selectFirst(".caption").html()
                 val imgUrl = content.selectFirst("img").attr("src")
-                val imgData = Unirest.get(imgUrl).asString().body
+                val imgData = Unirest.get(imgUrl).asBytes().body
                 val externalEvent = Event(name, true)
                 val existing = dbEvents.firstOrNull { it.name == externalEvent.name }
                 if(existing == null) {
                     val newEvent = externalEvent.saveIn(events)
                     if(newEvent == null) {
-                        println("event ${externalEvent.name} was not saved")
+                        println("eventId ${externalEvent.name} was not saved")
                         return@forEach
                     }
-                    val newImage = Image(imgData.toByteArray(), imgUrl, newEvent).saveIn(images)
+                    val newImage = Image(imgData, imgUrl, newEvent, null).saveIn(images)
                     if(newImage == null) {
-                        println("image for event ${externalEvent.name} was not saved")
+                        println("image for eventId ${externalEvent.name} was not saved")
                         return@forEach
                     }
                 }

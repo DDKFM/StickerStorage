@@ -26,7 +26,9 @@ data class Sticker(
     @Fetch(FetchMode.JOIN)
     var keywords : MutableList<String>,
     @Column
-    var comment : String
+    var comment : String,
+    @OneToOne
+    var location : Location
 ) :  AbstractPersistableEntity<Long>() {
     fun toSimple() : SimpleSticker {
         return SimpleSticker(
@@ -35,7 +37,8 @@ data class Sticker(
                 eventId = this.event.id,
                 amount = this.amount,
                 keywords = this.keywords,
-                comment = this.comment
+                comment = this.comment,
+                locationId = this.location.id
         )
     }
 }
@@ -46,5 +49,7 @@ data class SimpleSticker(
         var eventId : Long?,
         var amount : Int,
         var keywords : MutableList<String>,
-        var comment : String
+        var comment : String,
+        var locationId : Long?
+
 )

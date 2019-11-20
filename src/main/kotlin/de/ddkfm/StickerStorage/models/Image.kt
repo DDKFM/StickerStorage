@@ -19,12 +19,20 @@ data class Image(
     @Column
     var imageUrl : String,
     @OneToOne
-    var event : Event?
+    var event : Event?,
+    @OneToOne
+    var sticker : Sticker?
 ) :  AbstractPersistableEntity<Long>()
 
 
 data class SimpleImage(
         var imageDataCallback : String,
         var imageUrl : String,
-        var event : Long?
+        var eventId : Long?,
+        var stickerId : Long?,
+        val type : String = when {
+            eventId != null -> "event"
+            stickerId != null -> "sticker"
+            else -> "unknown"
+        }
 )

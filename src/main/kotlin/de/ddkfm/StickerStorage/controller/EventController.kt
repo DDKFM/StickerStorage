@@ -2,6 +2,7 @@ package de.ddkfm.StickerStorage.controller
 
 import de.ddkfm.StickerStorage.models.Event
 import de.ddkfm.StickerStorage.models.SimpleEvent
+import de.ddkfm.StickerStorage.models.SimpleImage
 import de.ddkfm.StickerStorage.repository.EventRepository
 import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.utils.created
@@ -9,7 +10,6 @@ import de.ddkfm.StickerStorage.utils.location
 import de.ddkfm.StickerStorage.utils.measureTime
 import de.ddkfm.StickerStorage.utils.withParams
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
@@ -46,7 +46,7 @@ class EventController(private val events: EventRepository, private val images: I
                 .firstOrNull()
         if(existingEvent != null)
             return badRequest()
-                    .body("event already exists")
+                    .body("eventId already exists")
         val saved = events.save(Event(event.name, event.isExternalEvent))
         return request
                 .location("/v1/events/{ID}")
@@ -59,7 +59,7 @@ class EventController(private val events: EventRepository, private val images: I
     fun update(@PathVariable("id") id : Long,
                @RequestBody event : Event, request: HttpServletRequest) : ResponseEntity<*> {
         val existingEvent = events.findById(id).orElse(null)
-                ?: return badRequest().body("requested event does not exist")
+                ?: return badRequest().body("requested eventId does not exist")
 
 
         val newEvent = existingEvent.apply {
@@ -70,6 +70,18 @@ class EventController(private val events: EventRepository, private val images: I
                 .withParams(newEvent.id)
                 .created()
                 .body(newEvent)
+    }
+
+    @GetMapping("/{eventId}/image")
+    fun getImage(@PathVariable("eventId") id: Long, request : HttpServletRequest): ResponseEntity<SimpleImage> {
+        val image = images.findByEventId(id)
+                .firstOrNull()
+                ?: return notFound().build()
+        val imageCallback = request
+                .location("/v1/images/{imageId}")
+                .withParams(image.id)
+                .toUriString()
+        return ok(SimpleImage(imageCallback, image.imageUrl, image.event?.id, null))
     }
 
 }
