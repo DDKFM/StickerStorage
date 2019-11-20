@@ -1,11 +1,13 @@
 package de.ddkfm.StickerStorage.security
 
 import de.ddkfm.StickerStorage.models.Token
+import de.ddkfm.StickerStorage.utils.measureTime
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -14,9 +16,8 @@ import javax.servlet.http.HttpServletRequest
 object JwtTokenProvider {
 
     fun getAuthentication(token: String): Authentication {
-        return UsernamePasswordAuthenticationToken(SecurityConstants.AUTHENTICATION_USERNAME, SecurityConstants.AUTHENTICATION_PASSWORD)
+        return UsernamePasswordAuthenticationToken(SecurityConstants.AUTHENTICATION_USERNAME, SecurityConstants.AUTHENTICATION_PASSWORD, listOf(SimpleGrantedAuthority("ROLE_USER")))
     }
-
     fun resolveToken(req: HttpServletRequest): String? {
         val bearerToken = req.getHeader("Authorization")
         return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -44,6 +45,5 @@ object JwtTokenProvider {
         } catch (e: IllegalArgumentException) {
             false
         }
-
     }
 }
