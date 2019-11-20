@@ -20,15 +20,11 @@ data class Image(
     var imageUrl : String,
     @OneToOne
     var event : Event?
-) :  AbstractPersistableEntity<Long>() {
-    fun toModel() : SimpleImage {
-        return SimpleImage(imageData, imageUrl, event?.id)
-    }
-}
+) :  AbstractPersistableEntity<Long>()
 
 
 data class SimpleImage(
-        var imageData : ByteArray,
+        var imageDataCallback : String,
         var imageUrl : String,
         var event : Long?
 )

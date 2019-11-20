@@ -16,6 +16,10 @@ fun UriComponentsBuilder.withParams(vararg params : Any?) : UriComponents {
     return this.buildAndExpand(params)
 }
 
+fun UriComponentsBuilder.withParams(params : Map<String, Any?>) : UriComponents {
+    return this.buildAndExpand(params)
+}
+
 fun UriComponents.created() : ResponseEntity.BodyBuilder {
     return ResponseEntity.created(this.toUri())
 }
