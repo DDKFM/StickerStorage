@@ -12,22 +12,29 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.security.config.annotation.web.builders.WebSecurity
+import org.springframework.security.web.access.channel.ChannelProcessingFilter
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
+    @Autowired
+    private lateinit var jwtTokenProvider: JwtTokenProvider
+
     override fun configure(http: HttpSecurity) {
-        http.cors().and()
-                .csrf().disable()
+        http.csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
-                .antMatchers("/v1").permitAll()
+                .antMatchers("/openapi/*").permitAll()
+                .antMatchers("/v1/authenticate").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(JwtAuthorizationFilter(authenticationManager()))
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .addFilterBefore(JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter::class.java)
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
@@ -46,7 +53,6 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     fun corsConfigurationSource(): CorsConfigurationSource {
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", CorsConfiguration().applyPermitDefaultValues())
-
         return source
     }
 }

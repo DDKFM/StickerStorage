@@ -19,3 +19,10 @@ fun UriComponentsBuilder.withParams(vararg params : Any?) : UriComponents {
 fun UriComponents.created() : ResponseEntity.BodyBuilder {
     return ResponseEntity.created(this.toUri())
 }
+
+fun <T> measureTime(name : String, builder : () -> T) : T {
+    val start = System.currentTimeMillis()
+    val result = builder()
+    println("time for $name: ${System.currentTimeMillis() - start} ms")
+    return result
+}

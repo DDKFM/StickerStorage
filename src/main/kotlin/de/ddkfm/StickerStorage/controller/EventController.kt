@@ -6,6 +6,7 @@ import de.ddkfm.StickerStorage.repository.EventRepository
 import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.utils.created
 import de.ddkfm.StickerStorage.utils.location
+import de.ddkfm.StickerStorage.utils.measureTime
 import de.ddkfm.StickerStorage.utils.withParams
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
@@ -20,10 +21,10 @@ class EventController(private val events: EventRepository, private val images: I
 
     @GetMapping("")
     fun all(): ResponseEntity<List<SimpleEvent>> {
-        val start = System.currentTimeMillis()
-        val allEvents = events.findAll().map { it.toModel() }
-        println("${System.currentTimeMillis() - start} ms")
-        return ok(allEvents)
+        return measureTime("all Events") {
+            val allEvents = events.findAll().map { it.toModel() }
+            ok(allEvents)
+        }
     }
 
     @GetMapping("/{id}")
