@@ -21,9 +21,9 @@ spring:
 
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/stickerstorage2
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:stickerstorage}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
 
   jpa:
     openInView: false
@@ -47,5 +47,4 @@ logging:
   level:
     org.springframework.web: INFO
     org.springframework.security: INFO
-    com.example: DEBUG
   file: logs/app.log
