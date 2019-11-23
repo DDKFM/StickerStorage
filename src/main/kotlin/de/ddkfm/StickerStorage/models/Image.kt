@@ -25,6 +25,11 @@ data class Image(
 ) :  AbstractPersistableEntity<Long>()
 
 
+data class ImageCreation(
+        var imageUrl : String,
+        var fetchBytedataFromUrl : Boolean,
+        var imageData : ByteArray?
+)
 data class SimpleImage(
         var imageDataCallback : String,
         var imageUrl : String,

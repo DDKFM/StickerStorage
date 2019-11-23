@@ -11,6 +11,7 @@ import de.ddkfm.StickerStorage.utils.saveIn
 import de.ddkfm.StickerStorage.utils.withParams
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import kong.unirest.Unirest
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
@@ -32,12 +33,9 @@ class StickerController(private val stickers: StickerRepository,
     fun all(
             @RequestParam("event", defaultValue = "") event : String = "",
             @RequestParam("location", defaultValue = "") location : String = "",
-            @RequestParam("query", defaultValue = "") query : String = ""): ResponseEntity<List<SimpleSticker>> {
+            @RequestParam("name", defaultValue = "") name : String = ""): ResponseEntity<List<SimpleSticker>> {
 
-        val allSticker = when {
-            query.isNotEmpty() -> stickers.findByNameIgnoreCaseContaining(query)
-            else -> stickers.findAll()
-        }
+        val allSticker = stickers.findWithParameters(event, location, name)
         return ok(allSticker.map { it.toSimple() })
     }
 
@@ -74,6 +72,57 @@ class StickerController(private val stickers: StickerRepository,
                 .withParams(savedSticker.id)
                 .created()
                 .body(savedSticker.toSimple())
+    }
+
+    @PostMapping("/{stickerId}/image")
+    fun createImage(
+            @PathVariable("stickerId") id: Long,
+            @RequestBody imageToCreate : ImageCreation, request : HttpServletRequest) : ResponseEntity<SimpleImage> {
+        val sticker = stickers.findById(id).orElse(null)
+                ?: return badRequest().build()
+        try {
+            //take the incoming bytedata if the flag is not set, otherwise fetch data from url
+            val imageData = imageToCreate.takeIf { !it.fetchBytedataFromUrl }?.imageData
+                    ?: Unirest.get(imageToCreate.imageUrl).asBytes().body
+            val image = Image(imageData, imageToCreate.imageUrl, null, sticker).saveIn(images)
+                    ?: return badRequest().build()
+            val imageCallback = request
+                    .location("/v1/images/{imageId}")
+                    .withParams(image.id)
+                    .toUri()
+            return ok(SimpleImage(imageCallback.toString(), image.imageUrl, null, sticker.id))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return badRequest().build()
+        }
+    }
+
+    @PutMapping("/{stickerId}/image")
+    fun updateImage(
+            @PathVariable("stickerId") id: Long,
+            @RequestBody imageToCreate : ImageCreation, request : HttpServletRequest) : ResponseEntity<SimpleImage> {
+        val sticker = stickers.findById(id).orElse(null)
+                ?: return badRequest().build()
+        val existingImage = images.findByStickerId(id).firstOrNull()
+                ?: return badRequest().build()
+        try {
+            //take the incoming bytedata if the flag is not set, otherwise fetch data from url
+            val imageData = imageToCreate.takeIf { !it.fetchBytedataFromUrl }?.imageData
+                    ?: Unirest.get(imageToCreate.imageUrl).asBytes().body
+            val image = existingImage.apply {
+                this.imageData = imageData
+                this.imageUrl = imageToCreate.imageUrl
+            }.saveIn(images)
+                    ?: return badRequest().build()
+            val imageCallback = request
+                    .location("/v1/images/{imageId}")
+                    .withParams(image.id)
+                    .toUri()
+            return ok(SimpleImage(imageCallback.toString(), image.imageUrl, null, sticker.id))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return badRequest().build()
+        }
     }
 
     @GetMapping("/{stickerId}/image")

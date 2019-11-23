@@ -1,15 +1,15 @@
 package de.ddkfm.StickerStorage.controller
 
-import de.ddkfm.StickerStorage.models.Event
-import de.ddkfm.StickerStorage.models.SimpleEvent
-import de.ddkfm.StickerStorage.models.SimpleImage
+import de.ddkfm.StickerStorage.models.*
 import de.ddkfm.StickerStorage.repository.EventRepository
 import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.utils.created
 import de.ddkfm.StickerStorage.utils.location
+import de.ddkfm.StickerStorage.utils.saveIn
 import de.ddkfm.StickerStorage.utils.withParams
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import kong.unirest.Unirest
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.*
@@ -24,9 +24,9 @@ class EventController(private val events: EventRepository, private val images: I
 
 
     @GetMapping("")
-    fun all(@RequestParam("query", defaultValue = "") query : String = ""): ResponseEntity<List<SimpleEvent>> {
+    fun all(@RequestParam("name", defaultValue = "") name : String = ""): ResponseEntity<List<SimpleEvent>> {
         val allEvents = when {
-            query.isNotEmpty() -> events.findByNameIgnoreCaseContaining(query)
+            name.isNotEmpty() -> events.findByNameIgnoreCaseContaining(name)
             else -> events.findAll()
         }
         return ok(allEvents.map { it.toModel() })
@@ -82,6 +82,57 @@ class EventController(private val events: EventRepository, private val images: I
                 .withParams(image.id)
                 .toUriString()
         return ok(SimpleImage(imageCallback, image.imageUrl, image.event?.id, null))
+    }
+
+    @PostMapping("/{eventId}/image")
+    fun createImage(
+            @PathVariable("eventId") id: Long,
+            @RequestBody imageToCreate : ImageCreation, request : HttpServletRequest) : ResponseEntity<SimpleImage> {
+        val event = events.findById(id).orElse(null)
+                ?: return badRequest().build()
+        try {
+            //take the incoming bytedata if the flag is not set, otherwise fetch data from url
+            val imageData = imageToCreate.takeIf { !it.fetchBytedataFromUrl }?.imageData
+                    ?: Unirest.get(imageToCreate.imageUrl).asBytes().body
+            val image = Image(imageData, imageToCreate.imageUrl, event, null).saveIn(images)
+                    ?: return badRequest().build()
+            val imageCallback = request
+                    .location("/v1/images/{imageId}")
+                    .withParams(image.id)
+                    .toUri()
+            return ok(SimpleImage(imageCallback.toString(), image.imageUrl, event.id, null))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return badRequest().build()
+        }
+    }
+
+    @PutMapping("/{eventId}/image")
+    fun updateImage(
+            @PathVariable("eventId") id: Long,
+            @RequestBody imageToCreate : ImageCreation, request : HttpServletRequest) : ResponseEntity<SimpleImage> {
+        val event = events.findById(id).orElse(null)
+                ?: return badRequest().build()
+        val existingImage = images.findByEventId(id).firstOrNull()
+                ?: return badRequest().build()
+        try {
+            //take the incoming bytedata if the flag is not set, otherwise fetch data from url
+            val imageData = imageToCreate.takeIf { !it.fetchBytedataFromUrl }?.imageData
+                    ?: Unirest.get(imageToCreate.imageUrl).asBytes().body
+            val image = existingImage.apply {
+                this.imageData = imageData
+                this.imageUrl = imageToCreate.imageUrl
+            }.saveIn(images)
+                    ?: return badRequest().build()
+            val imageCallback = request
+                    .location("/v1/images/{imageId}")
+                    .withParams(image.id)
+                    .toUri()
+            return ok(SimpleImage(imageCallback.toString(), image.imageUrl, event.id, null))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return badRequest().build()
+        }
     }
 
 }

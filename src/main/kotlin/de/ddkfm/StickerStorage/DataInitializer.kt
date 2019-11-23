@@ -3,9 +3,11 @@ package de.ddkfm.StickerStorage
 import de.ddkfm.StickerStorage.models.Event
 import de.ddkfm.StickerStorage.models.Image
 import de.ddkfm.StickerStorage.models.Location
+import de.ddkfm.StickerStorage.models.Sticker
 import de.ddkfm.StickerStorage.repository.EventRepository
 import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.repository.LocationRepository
+import de.ddkfm.StickerStorage.repository.StickerRepository
 import de.ddkfm.StickerStorage.utils.saveIn
 import kong.unirest.Unirest
 import lombok.extern.slf4j.Slf4j
@@ -13,6 +15,7 @@ import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 @Slf4j
@@ -27,14 +30,30 @@ class DataInitializer : CommandLineRunner {
     @Autowired
     lateinit var images: ImageRepository
 
+    @Autowired
+    lateinit var stickers : StickerRepository
+
     @Throws(Exception::class)
     override fun run(vararg args: String) {
-        val location = locations.findAll().firstOrNull()
-        if(location == null) {
-            val newLocation = Location("Test", "Test")
-            locations.save(newLocation)
-        }
         cacheEvents()
+        val location = locations
+                .findByName("Test").firstOrNull()
+                ?: Location("Test", "Test").saveIn(locations)
+                ?: return
+        val event = events
+                .findByName("Chemnitzer Linux Tage 2019").firstOrNull()
+                ?: Event("Chemnitzer Linux Tage 2019", false).saveIn(events)
+                ?: return
+
+        val sticker = stickers
+                .findByName("Test Sticker").firstOrNull()
+                ?: Sticker("Test Sticker", event, 42, mutableListOf("Test"), "Test", location).saveIn(stickers)
+        val allEvents = events.findAll()
+        for(i in 0 until 100) {
+            stickers
+                    .findByName("Test Sticker ${UUID.randomUUID()}")
+                    .ifEmpty { Sticker("Test Sticker ${UUID.randomUUID()}", allEvents.random(), 42, mutableListOf("Test"), "Test", location).saveIn(stickers) }
+        }
 
     }
 
@@ -63,6 +82,6 @@ class DataInitializer : CommandLineRunner {
                     }
                 }
             }
-        }
+        }.get()
     }
 }
