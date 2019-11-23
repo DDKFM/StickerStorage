@@ -7,7 +7,6 @@ import de.ddkfm.StickerStorage.repository.EventRepository
 import de.ddkfm.StickerStorage.repository.ImageRepository
 import de.ddkfm.StickerStorage.utils.created
 import de.ddkfm.StickerStorage.utils.location
-import de.ddkfm.StickerStorage.utils.measureTime
 import de.ddkfm.StickerStorage.utils.withParams
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag

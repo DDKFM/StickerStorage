@@ -1,7 +1,6 @@
 package de.ddkfm.StickerStorage.security
 
 import de.ddkfm.StickerStorage.models.Token
-import de.ddkfm.StickerStorage.utils.measureTime
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
