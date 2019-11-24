@@ -42,12 +42,7 @@ class EventController(private val events: EventRepository, private val images: I
 
     @PostMapping("")
     fun create(@RequestBody event : SimpleEvent, request : HttpServletRequest) : ResponseEntity<*> {
-        val existingEvent = events.findByName(event.name)
-                .firstOrNull()
-        if(existingEvent != null)
-            return badRequest()
-                    .body("eventId already exists")
-        val saved = events.save(Event(event.name, event.isExternalEvent))
+        val saved = events.save(Event(event.name, isExternalEvent = false))
         return request
                 .location("/v1/events/{ID}")
                 .withParams(saved.id)
