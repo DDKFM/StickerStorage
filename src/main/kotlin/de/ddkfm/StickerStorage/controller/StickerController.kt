@@ -74,6 +74,30 @@ class StickerController(private val stickers: StickerRepository,
                 .body(savedSticker.toSimple())
     }
 
+    @PutMapping("/{stickerId}")
+    fun update(@PathVariable("stickerId") stickerId : Long, @RequestBody sticker : SimpleSticker, request: HttpServletRequest) : ResponseEntity<*> {
+        val existingSticker = stickers.findById(stickerId).orElse(null)
+                ?: return badRequest().body("with ID $stickerId could not be found")
+        val event = sticker.eventId?.let(events::findById)?.orElse(null)
+                ?: return badRequest().body("eventId ${sticker.eventId} is not valid")
+        val location = sticker.locationId?.let(locations::findById)?.orElse(null)
+                ?: return badRequest().body("locationId ${sticker.locationId} is not valid")
+        val newSticker = existingSticker.apply {
+            this.event = event
+            this.location = location
+            this.amount = sticker.amount
+            this.comment = sticker.comment
+            this.name = sticker.name
+            this.keywords = sticker.keywords
+        }.saveIn(stickers)
+                ?: return badRequest().body("sticker could not be saved")
+        return request
+                .location("/v1/stickers/{ID}")
+                .withParams(newSticker.id)
+                .created()
+                .body(newSticker.toSimple())
+    }
+
     @PostMapping("/{stickerId}/image")
     fun createImage(
             @PathVariable("stickerId") id: Long,
