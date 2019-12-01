@@ -98,6 +98,30 @@ class StickerController(private val stickers: StickerRepository,
                 .body(newSticker.toSimple())
     }
 
+    @PutMapping("/{stickerId}/incrementAmount")
+    fun incrementAmount(@PathVariable("stickerId") stickerId : Long) : ResponseEntity<SimpleSticker> {
+        val sticker = stickers.findById(stickerId).orElse(null)
+                ?: return notFound().build()
+        val newSticker = sticker.apply {
+            this.amount++
+        }.saveIn(stickers)
+                ?: return badRequest().build()
+        return ok(newSticker.toSimple())
+    }
+
+    @PutMapping("/{stickerId}/decrementAmount")
+    fun decrementAmount(@PathVariable("stickerId") stickerId : Long) : ResponseEntity<SimpleSticker> {
+        val sticker = stickers.findById(stickerId).orElse(null)
+                ?: return notFound().build()
+        val newSticker = sticker.apply {
+            this.amount--
+        }.saveIn(stickers)
+                ?: return badRequest().build()
+        return ok(newSticker.toSimple())
+    }
+
+
+
     @PostMapping("/{stickerId}/image")
     fun createImage(
             @PathVariable("stickerId") id: Long,
