@@ -63,5 +63,3 @@ services:
  
  ## swagger
  the backend autogeneretes a OpenAPI Specification (aka. Swagger) on /openapi and include a swagger-ui interface on /swagger-ui
- 
- [http://localhost:8084/swagger-ui]
