@@ -1,0 +1,26 @@
+version: "3"
+services:
+  db:
+    image: "postgres"
+    container_name: "postgres"
+    environment:
+      - POSTGRES_USER=stickerstorage
+      - POSTGRES_PASSWORD=stickerstorage
+      - POSTGRES_DB=stickerstorage
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  stickerstorage:
+    depends_on:
+      - db
+    image: "ddkfm/stickerstorage"
+    container_name: "stickerstorage"
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USERNAME=stickerstorage
+      - DATABASE_PASSWORD=stickerstorage
+      - DATABASE_NAME=stickerstorage
+      - AUTHENTICATION_USERNAME=admin
+      - AUTHENTICATION_PASSWORD=admin
+      - JWT_SECRET=MyPerfectSecret!
+    ports:
+      - 8084:8080
