@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/DDKFM/StickerStorage/">
-    <img src="logo.svg" alt="Logo" width="200px">
+    <img src="logo.svg" alt="Logo" width="320px">
   </a>
 </p>
 <p align="center">
