@@ -7,43 +7,30 @@
   <a href="https://kotlinlang.org/">
     <img src="kotlin.svg" alt="Logo" width=72 height=72>
   </a>
+    <a href="">
+    <img src="https://wiki.postgresql.org/images/3/30/PostgreSQL_logo.3colors.120x120.png" alt="Postgresql", width="72px"/>
+  </a>
 </p>
 
-# Plan4BA
+# Sticker storage
 
-Plan4BA provides a personalized lecture plan and meal plan for students of the universities that are part of [Berufsakademie Sachsen](https://www.ba-sachsen.de/) (BA) in Saxony, Germany.
-
-It's used in [production](https://plan4ba.ba-leipzig.de)! :rocket:
+Sticker storage provides a spring boot powered backend with a REST-API to manage your whole sticker collection.
 
 ## The problem
 
-Students at a BA university use a system called Campus Dual to check their lectures. But this system is really slow, not responsive and you have to log in every time.
+The main problem for all of us developers is to keep track of all stickers, which we bring along from it conferences and meetups.
 
 ## The solution
 
-Plan4BA is caching and updating the personalized lectures and exams from the system Campus Dual. The user can stay logged in to view the lecture plan with a nice and responsive user interface in seconds. Plan4BA also provides some additional functionality. The user receives a notification, if there are changes in the lecture plan.
+the sticker storage backend provides a CRUD Rest-API to store the stickers and assigm them to locations or events. 
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/download/) and npm (included in the Node.js installation)
-- [Angular CLI](https://github.com/angular/angular-cli) (recommended) with `npm install -g @angular/cli`
-
-## Preparation
-
-Before running anyting, you have to install the dependencies by running `npm install` in the root directory of this project.
-To send api requests to the backend, you can use the [integrated proxy](https://github.com/angular/angular-cli/blob/master/docs/documentation/stories/proxy.md) of the angular cli development server. This is necessary, because the browser tries to prevent XSS-Attacks. To use the proxy, you can create a copy of the example file `cp proxy/proxy/proxy.conf.example.json proxy/proxy.conf.json`. Then you have to change the target url for your local setup.
-
-## Maintainers
-
-| [<img alt="mgechev" src="https://avatars0.githubusercontent.com/u/30528168?s=460&v=4" width="117">](https://github.com/Robert-Beier) | [<img alt="wKoza" src="https://avatars2.githubusercontent.com/u/6908978?s=460&v=4" width="117">](https://github.com/DDKFM) |
-| :----------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
-|                                           [Robert-Beier](https://github.com/Robert-Beier)                                            |                                             [DDKFM](https://github.com/DDKFM)                                              |
-
-Robert Beier is maintaining the Angular Web-Application. DDKFM is maintaining the server-side microservices. You can find them in our Github organization [Plan4BA](https://github.com/Plan4BA).
-
+- docker
+- or for building from source: a OpenJDK > 8
 ## How to use it
 
-You can basically only use it, if you have credentails to the Campus Dual System. Sorry.
+
 
 ## Run
 
