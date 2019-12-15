@@ -31,6 +31,7 @@ the sticker storage backend provides a CRUD Rest-API to store the stickers and a
 ## How to use it
 
 run with docker-compose:
+```yaml
 version: "3"
 services:
   db:
@@ -57,3 +58,10 @@ services:
       - JWT_SECRET=MyPerfectSecret!
     ports:
       - 8084:8080
+ ```
+ this yaml-file will create a database container, a stickerstorage container and then expose the Backend to Port 8084 on the host.
+ 
+ ## swagger
+ the backend autogeneretes a OpenAPI Specification (aka. Swagger) on /openapi and include a swagger-ui interface on /swagger-ui
+ 
+ [http://localhost:8084/swagger-ui]
