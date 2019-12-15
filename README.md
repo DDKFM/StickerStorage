@@ -30,26 +30,30 @@ the sticker storage backend provides a CRUD Rest-API to store the stickers and a
 - or for building from source: a OpenJDK > 8
 ## How to use it
 
-
-
-## Run
-
-You can run a development web server with the Angular CLI using `ng serve`. If you want to use the integrated proxy of the angular cli development server, as mentioned in "Preparation", you need to run `ng serve --proxy-config proxy/proxy.conf.json`.
-
-## Build
-
-To build the web app run `ng build --prod`.
-
-## Mobile App
-
-We use [Apache Cordova](https://cordova.apache.org/) to generate mobile apps. In order to generate a mobile app, follow these steps:
-
-1. Install the cordova CLI by executing `npm install -g cordova`
-2. Create an application folder by executing `cordova create plan4BA_mobile de.ba-leipzig.plan4ba "Plan4BA"`
-3. Navigate into the folder using `cd plan4BA_mobile`
-4. Add the desired platform, for example android, by executing `cordova platform add android`
-5. In the root directory of this Angular application, run `ng build --prod --base-href . --output-path ../Plan4plan4BA_mobileBA/www/` (adjust the output path)
-6. Add `<script type=”text/javascript” src=”cordova.js”></script>` to the generated index.html file
-7. Build for your desired platform, for example android, by executing `cordova build android`
-
-For further information, read [this guide](https://medium.com/@EliaPalme/how-to-wrap-an-angular-app-with-apache-cordova-909024a25d79).
+run with docker-compose:
+version: "3"
+services:
+  db:
+    image: "postgres"
+    container_name: "postgres"
+    environment:
+      - POSTGRES_USER=stickerstorage
+      - POSTGRES_PASSWORD=stickerstorage
+      - POSTGRES_DB=stickerstorage
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  stickerstorage:
+    depends_on:
+      - db
+    image: "ddkfm/stickerstorage"
+    container_name: "stickerstorage"
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USERNAME=stickerstorage
+      - DATABASE_PASSWORD=stickerstorage
+      - DATABASE_NAME=stickerstorage
+      - AUTHENTICATION_USERNAME=admin
+      - AUTHENTICATION_PASSWORD=admin
+      - JWT_SECRET=MyPerfectSecret!
+    ports:
+      - 8084:8080
